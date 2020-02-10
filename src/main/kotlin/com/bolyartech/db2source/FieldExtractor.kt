@@ -17,7 +17,7 @@ class FieldExtractor {
                 while (it.next()) {
                     try {
                         val len: Long = if (it.getLong(3) != 0L) it.getLong(3) else it.getLong(4)
-                        fields.add(Field(it.getString(1), typeMapper(it.getString(2), len), len))
+                        fields.add(Field(it.getString(1), typeMapper(it.getString(2)), len))
                     } catch (e: IllegalArgumentException) {
                         return FieldExtractResultError("Cannot map '{$it.getString(2)}'")
                     }
@@ -28,7 +28,7 @@ class FieldExtractor {
         return FieldExtractResultOk(fields)
     }
 
-    private fun typeMapper(sqlType: String, len: Long): FieldType {
+    private fun typeMapper(sqlType: String): FieldType {
         val sqlTypeL = sqlType.toLowerCase()
         return when (sqlTypeL) {
             "int", "mediumint", "smallint", "tinyint" -> FieldType.INT
@@ -44,9 +44,7 @@ class FieldExtractor {
             "timestamp" -> FieldType.LONG
             else -> throw IllegalArgumentException()
         }
-
     }
-
 }
 
 sealed class FieldExtractResult
