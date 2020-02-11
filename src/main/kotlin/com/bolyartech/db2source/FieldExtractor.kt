@@ -31,9 +31,9 @@ class FieldExtractor {
     private fun typeMapper(sqlType: String): FieldType {
         val sqlTypeL = sqlType.toLowerCase()
         return when (sqlTypeL) {
-            "int", "mediumint", "smallint", "tinyint" -> FieldType.INT
+            "int", "mediumint", "smallint" -> FieldType.INT
             "bigint" -> FieldType.LONG
-            "boolean" -> FieldType.BOOLEAN
+            "boolean", "tinyint" -> FieldType.BOOLEAN
             "varchar" -> FieldType.STRING
             "text", "longtext", "mediumtext", "tinytext" -> FieldType.STRING
             "float" -> FieldType.FLOAT
@@ -41,7 +41,7 @@ class FieldExtractor {
             "time" -> FieldType.LOCAL_TIME
             "datetime" -> FieldType.LOCAL_DATETIME
             "date" -> FieldType.LOCAL_DATE
-            "timestamp" -> FieldType.LONG
+            "timestamp" -> FieldType.LOCAL_DATETIME
             else -> throw IllegalArgumentException()
         }
     }

@@ -11,7 +11,6 @@ class Db2Source {
     private val TEMPLATE_CLASS = "class.vm"
 
     fun generate(data: ConfigData, copyPreparedStatementExtensions: Boolean = true): GenerationResult {
-        Class.forName("com.mysql.jdbc.Driver")
         val dbc: Connection = try {
             DriverManager.getConnection(data.dbDsn, data.dbUsername, data.dbPassword)
         } catch (e: SQLException) {
