@@ -17,7 +17,12 @@ class Db2Source {
             return GenerationResultErrorCannotConnectDb(e.message!!)
         }
 
-        val fe = FieldExtractor()
+        val typeMapper = resolveTypeMapper(data.dbDsn)
+        if (typeMapper == null) {
+            return GenerationResultErrorUnsupportedDbType(data.dbDsn)
+        }
+
+        val fe = FieldExtractor(typeMapper)
         val fieldsRez = dbc.use {
             fe.extract(dbc, data.tables[0].tableName)
         }
@@ -32,6 +37,7 @@ class Db2Source {
 
         val tple = fac.createNew()
         tple.assign("class_name", data.tables[0].destinationClassName)
+        tple.assign("db_schema", data.dbSchema)
         tple.assign("table_name", data.tables[0].tableName)
         tple.assign("fields", fields)
         val src = tple.render(TEMPLATE_CLASS)
@@ -54,6 +60,16 @@ class Db2Source {
         return GenerationResultOk()
     }
 
+    private fun resolveTypeMapper(dbDsn: String): TypeMapper? {
+        return if (dbDsn.startsWith("jdbc:mysql")) {
+            TypeMapperMysql()
+        } else if (dbDsn.startsWith("jdbc:postgresql")) {
+            TypeMapperPostgres()
+        } else {
+            null
+        }
+    }
+
 }
 
 sealed class GenerationResult
@@ -62,5 +78,6 @@ class GenerationResultOk : GenerationResult()
 
 sealed class GenerationResultError(val reason: String) : GenerationResult()
 
+class GenerationResultErrorUnsupportedDbType(reason: String) : GenerationResultError(reason)
 class GenerationResultErrorCannotConnectDb(reason: String) : GenerationResultError(reason)
 class GenerationResultErrorUnableToExtractFields(reason: String) : GenerationResultError(reason)

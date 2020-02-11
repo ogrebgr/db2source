@@ -8,7 +8,7 @@ CREATE TABLE `test` (
   `floatcol` float NOT NULL,
   `doublecol` double NOT NULL,
   `datecol` date NOT NULL,
-  `tscol` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tscol` timestamp NOT NULL,
   `longtextcol` longtext NOT NULL,
   `booleancol` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`)

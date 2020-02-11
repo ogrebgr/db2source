@@ -4,22 +4,27 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.sql.Connection
 import java.sql.DriverManager
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.*
 
 class Db2SourceTest {
-    private val poko = Test(
+    //    private val dsn = "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8"
+    private val dsn = "jdbc:postgresql://localhost:5432/postgres"
+
+    init {
+        Class.forName("com.mysql.jdbc.Driver")
+        Class.forName("org.postgresql.Driver")
+    }
+
+    private val poko = com.bolyartech.db2source.Test(
         1, 1, "aaa", "bbb",
         LocalTime.of(11, 12), LocalDateTime.of(2020, 1, 21, 21, 22), 1.2f, 1.3,
-        LocalDate.of(2020, 2, 22), LocalDateTime.of(2020, 1, 21, 21, 22), "ccc", true
+        LocalDate.of(2020, 2, 22), OffsetDateTime.of(2020, 1, 21, 21, 22, 0, 0, ZoneOffset.UTC), "ccc", true
     )
 
     @Test
     fun test_Generate() {
-        Class.forName("com.mysql.jdbc.Driver")
         val conf = ConfigData(
-            "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+            dsn,
             "test", "test", "test", listOf(TableConfig("test", "Test", "/tmp"))
         )
         val db2source = Db2Source()
@@ -31,11 +36,9 @@ class Db2SourceTest {
 
     @Test
     fun test_createNew() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -61,11 +64,9 @@ class Db2SourceTest {
 
     @Test
     fun test_loadById() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -93,11 +94,9 @@ class Db2SourceTest {
 
     @Test
     fun test_loadAll() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -124,11 +123,9 @@ class Db2SourceTest {
 
     @Test
     fun test_update() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -155,11 +152,9 @@ class Db2SourceTest {
 
     @Test
     fun test_loadPageIdGreater() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -190,11 +185,9 @@ class Db2SourceTest {
 
     @Test
     fun test_loadPageIdLower() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -225,11 +218,9 @@ class Db2SourceTest {
 
     @Test
     fun test_loadLastPage() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -260,11 +251,9 @@ class Db2SourceTest {
 
     @Test
     fun test_count() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 
@@ -288,11 +277,9 @@ class Db2SourceTest {
 
     @Test
     fun test_delete() {
-        Class.forName("com.mysql.jdbc.Driver")
-
         val dbc: Connection =
             DriverManager.getConnection(
-                "jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf-8",
+                dsn,
                 "test", "test"
             )
 

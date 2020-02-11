@@ -4,6 +4,7 @@ import java.sql.SQLException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
 
 
 @Throws(SQLException::class)
@@ -130,5 +131,11 @@ fun PreparedStatement.setValue(position: Int, value: LocalDate) {
 
 @Throws(SQLException::class)
 fun PreparedStatement.setValue(position: Int, value: LocalDateTime) {
+    this.setObject(position, value)
+}
+
+
+@Throws(SQLException::class)
+fun PreparedStatement.setValue(position: Int, value: OffsetDateTime) {
     this.setObject(position, value)
 }

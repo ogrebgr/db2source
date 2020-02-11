@@ -7,6 +7,7 @@ import java.sql.Statement
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
 
 
 data class Test(
@@ -19,7 +20,7 @@ data class Test(
     val floatcol: Float,
     val doublecol: Double,
     val datecol: LocalDate,
-    val tscol: LocalDateTime,
+    val tscol: OffsetDateTime,
     val longtextcol: String,
     val booleancol: Boolean
 )
@@ -37,7 +38,7 @@ interface TestDbh {
         floatcol: Float,
         doublecol: Double,
         datecol: LocalDate,
-        tscol: LocalDateTime,
+        tscol: OffsetDateTime,
         longtextcol: String,
         booleancol: Boolean
     ): Test
@@ -72,22 +73,22 @@ interface TestDbh {
 
 class TestDbhImpl : TestDbh {
     private val SQL_INSERT =
-        """INSERT INTO "test" ("intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        """INSERT INTO "test"."test" ("intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
     private val SQL_SELECT_BY_ID =
-        """SELECT "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test" WHERE id = ?"""
+        """SELECT "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" WHERE id = ?"""
     private val SQL_SELECT_ALL =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test""""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test""""
     private val SQL_UPDATE =
-        """UPDATE "test" SET "intcol" = ?, "varcharcol" = ?, "textcol" = ?, "timecol" = ?, "datetimecol" = ?, "floatcol" = ?, "doublecol" = ?, "datecol" = ?, "tscol" = ?, "longtextcol" = ?, "booleancol" = ? WHERE id = ?"""
+        """UPDATE "test"."test" SET "intcol" = ?, "varcharcol" = ?, "textcol" = ?, "timecol" = ?, "datetimecol" = ?, "floatcol" = ?, "doublecol" = ?, "datecol" = ?, "tscol" = ?, "longtextcol" = ?, "booleancol" = ? WHERE id = ?"""
     private val SQL_SELECT_ID_GREATER =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test" WHERE id > ?"""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" WHERE id > ?"""
     private val SQL_SELECT_ID_LOWER =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test" WHERE id < ?"""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" WHERE id < ?"""
     private val SQL_SELECT_LAST =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test" ORDER BY id DESC"""
-    private val SQL_COUNT = """SELECT COUNT(id) FROM "test""""
-    private val SQL_DELETE = """DELETE FROM "test" WHERE id = ?"""
-    private val SQL_DELETE_ALL = """DELETE FROM "test""""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" ORDER BY id DESC"""
+    private val SQL_COUNT = """SELECT COUNT(id) FROM "test"."test""""
+    private val SQL_DELETE = """DELETE FROM "test"."test" WHERE id = ?"""
+    private val SQL_DELETE_ALL = """DELETE FROM "test"."test""""
 
     @Throws(SQLException::class)
     override fun createNew(
@@ -100,7 +101,7 @@ class TestDbhImpl : TestDbh {
         floatcol: Float,
         doublecol: Double,
         datecol: LocalDate,
-        tscol: LocalDateTime,
+        tscol: OffsetDateTime,
         longtextcol: String,
         booleancol: Boolean
     ): Test {
@@ -156,7 +157,7 @@ class TestDbhImpl : TestDbh {
                         it.getFloat(6),
                         it.getDouble(7),
                         it.getObject(8, LocalDate::class.java),
-                        it.getObject(9, LocalDateTime::class.java),
+                        it.getObject(9, OffsetDateTime::class.java),
                         it.getString(10),
                         it.getBoolean(11)
                     )
@@ -184,7 +185,7 @@ class TestDbhImpl : TestDbh {
                             it.getFloat(7),
                             it.getDouble(8),
                             it.getObject(9, LocalDate::class.java),
-                            it.getObject(10, LocalDateTime::class.java),
+                            it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
                             it.getBoolean(12)
                         )
@@ -241,7 +242,7 @@ class TestDbhImpl : TestDbh {
                             it.getFloat(7),
                             it.getDouble(8),
                             it.getObject(9, LocalDate::class.java),
-                            it.getObject(10, LocalDateTime::class.java),
+                            it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
                             it.getBoolean(12)
                         )
@@ -283,7 +284,7 @@ class TestDbhImpl : TestDbh {
                             it.getFloat(7),
                             it.getDouble(8),
                             it.getObject(9, LocalDate::class.java),
-                            it.getObject(10, LocalDateTime::class.java),
+                            it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
                             it.getBoolean(12)
                         )
@@ -317,7 +318,7 @@ class TestDbhImpl : TestDbh {
                             it.getFloat(7),
                             it.getDouble(8),
                             it.getObject(9, LocalDate::class.java),
-                            it.getObject(10, LocalDateTime::class.java),
+                            it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
                             it.getBoolean(12)
                         )

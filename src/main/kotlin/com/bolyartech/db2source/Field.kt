@@ -12,5 +12,6 @@ enum class FieldType {
     BOOLEAN,
     LOCAL_TIME,
     LOCAL_DATE,
-    LOCAL_DATETIME
+    LOCAL_DATETIME,
+    OFFSET_DATATIME
 }
