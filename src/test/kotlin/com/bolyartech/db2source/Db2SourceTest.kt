@@ -18,7 +18,8 @@ class Db2SourceTest {
     private val poko = com.bolyartech.db2source.Test(
         1, 1, "aaa", "bbb",
         LocalTime.of(11, 12), LocalDateTime.of(2020, 1, 21, 21, 22), 1.2f, 1.3,
-        LocalDate.of(2020, 2, 22), OffsetDateTime.of(2020, 1, 21, 21, 22, 0, 0, ZoneOffset.UTC), "ccc", true
+        LocalDate.of(2020, 2, 22), OffsetDateTime.of(2020, 1, 21, 21, 22, 0, 0, ZoneOffset.UTC), "ccc", true,
+        byteArrayOf(0x01, 0x02, 0x03)
     )
 
     @Test
@@ -30,7 +31,7 @@ class Db2SourceTest {
         val db2source = Db2Source()
         db2source.generate(conf)
 
-        // No exception is thrown
+        // No exception is thrown so we are good
         assertTrue(true)
     }
 
@@ -46,7 +47,7 @@ class Db2SourceTest {
         val newObj = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         assertTrue(newObj.intcol == poko.intcol)
@@ -75,7 +76,7 @@ class Db2SourceTest {
         val newObj = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         val loaded = impl.loadById(dbc, newObj.id)
@@ -108,12 +109,12 @@ class Db2SourceTest {
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         count = impl.count(dbc)
@@ -134,13 +135,13 @@ class Db2SourceTest {
         val obj = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
         val newintcol = 456
         val newObj = Test(
             obj.id, newintcol, obj.varcharcol, obj.textcol,
             obj.timecol, obj.datetimecol, obj.floatcol, obj.doublecol,
-            obj.datecol, obj.tscol, obj.longtextcol, obj.booleancol
+            obj.datecol, obj.tscol, obj.longtextcol, obj.booleancol, obj.bytecol
         )
         val rez = impl.update(dbc, newObj)
         assertTrue(rez)
@@ -164,19 +165,19 @@ class Db2SourceTest {
         val obj = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         val gt = impl.loadPageIdGreater(dbc, obj.id, 20)
@@ -197,19 +198,19 @@ class Db2SourceTest {
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         val obj = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         val gt = impl.loadPageIdLower(dbc, obj.id, 20)
@@ -230,19 +231,19 @@ class Db2SourceTest {
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         val gt = impl.loadLastPage(dbc, 2)
@@ -264,13 +265,13 @@ class Db2SourceTest {
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
         assert(impl.count(dbc) == 1)
         impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
         assert(impl.count(dbc) == 2)
     }
@@ -289,12 +290,12 @@ class Db2SourceTest {
         val obj1 = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
         val obj2 = impl.createNew(
             dbc, poko.intcol, poko.varcharcol, poko.textcol,
             poko.timecol, poko.datetimecol, poko.floatcol, poko.doublecol,
-            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol
+            poko.datecol, poko.tscol, poko.longtextcol, poko.booleancol, poko.bytecol
         )
 
         assertTrue(impl.delete(dbc, obj1.id) == 1)

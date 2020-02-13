@@ -19,6 +19,7 @@ class TypeMapperMysql : TypeMapper {
             "datetime" -> FieldType.LOCAL_DATETIME
             "date" -> FieldType.LOCAL_DATE
             "timestamp" -> FieldType.LOCAL_DATETIME
+            "binary", "varbinary" -> FieldType.BYTE_ARRAY
             else -> throw IllegalArgumentException()
         }
     }
@@ -38,6 +39,7 @@ class TypeMapperPostgres : TypeMapper {
             "time", "time with time zone", "time without time zone" -> FieldType.LOCAL_TIME
             "real" -> FieldType.FLOAT
             "double precision" -> FieldType.DOUBLE
+            "bytea" -> FieldType.BYTE_ARRAY
             else -> throw IllegalArgumentException()
         }
     }

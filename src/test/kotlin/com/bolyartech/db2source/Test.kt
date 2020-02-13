@@ -22,7 +22,8 @@ data class Test(
     val datecol: LocalDate,
     val tscol: OffsetDateTime,
     val longtextcol: String,
-    val booleancol: Boolean
+    val booleancol: Boolean,
+    val bytecol: ByteArray
 )
 
 // TODO add provider to Dagger DI
@@ -40,7 +41,8 @@ interface TestDbh {
         datecol: LocalDate,
         tscol: OffsetDateTime,
         longtextcol: String,
-        booleancol: Boolean
+        booleancol: Boolean,
+        bytecol: ByteArray
     ): Test
 
     @Throws(SQLException::class)
@@ -73,19 +75,19 @@ interface TestDbh {
 
 class TestDbhImpl : TestDbh {
     private val SQL_INSERT =
-        """INSERT INTO "test"."test" ("intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        """INSERT INTO "test"."test" ("intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol", "bytecol") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
     private val SQL_SELECT_BY_ID =
-        """SELECT "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" WHERE id = ?"""
+        """SELECT "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol", "bytecol" FROM "test"."test" WHERE id = ?"""
     private val SQL_SELECT_ALL =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test""""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol", "bytecol" FROM "test"."test""""
     private val SQL_UPDATE =
-        """UPDATE "test"."test" SET "intcol" = ?, "varcharcol" = ?, "textcol" = ?, "timecol" = ?, "datetimecol" = ?, "floatcol" = ?, "doublecol" = ?, "datecol" = ?, "tscol" = ?, "longtextcol" = ?, "booleancol" = ? WHERE id = ?"""
+        """UPDATE "test"."test" SET "intcol" = ?, "varcharcol" = ?, "textcol" = ?, "timecol" = ?, "datetimecol" = ?, "floatcol" = ?, "doublecol" = ?, "datecol" = ?, "tscol" = ?, "longtextcol" = ?, "booleancol" = ?, "bytecol" = ? WHERE id = ?"""
     private val SQL_SELECT_ID_GREATER =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" WHERE id > ?"""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol", "bytecol" FROM "test"."test" WHERE id > ?"""
     private val SQL_SELECT_ID_LOWER =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" WHERE id < ?"""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol", "bytecol" FROM "test"."test" WHERE id < ?"""
     private val SQL_SELECT_LAST =
-        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol" FROM "test"."test" ORDER BY id DESC"""
+        """SELECT "id", "intcol", "varcharcol", "textcol", "timecol", "datetimecol", "floatcol", "doublecol", "datecol", "tscol", "longtextcol", "booleancol", "bytecol" FROM "test"."test" ORDER BY id DESC"""
     private val SQL_COUNT = """SELECT COUNT(id) FROM "test"."test""""
     private val SQL_DELETE = """DELETE FROM "test"."test" WHERE id = ?"""
     private val SQL_DELETE_ALL = """DELETE FROM "test"."test""""
@@ -103,7 +105,8 @@ class TestDbhImpl : TestDbh {
         datecol: LocalDate,
         tscol: OffsetDateTime,
         longtextcol: String,
-        booleancol: Boolean
+        booleancol: Boolean,
+        bytecol: ByteArray
     ): Test {
         dbc.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS).use {
             it.setValue(1, intcol)
@@ -117,6 +120,7 @@ class TestDbhImpl : TestDbh {
             it.setValue(9, tscol)
             it.setValue(10, longtextcol)
             it.setValue(11, booleancol)
+            it.setValue(12, bytecol)
 
             it.executeUpdate()
             it.generatedKeys.use {
@@ -133,7 +137,8 @@ class TestDbhImpl : TestDbh {
                     datecol,
                     tscol,
                     longtextcol,
-                    booleancol
+                    booleancol,
+                    bytecol
                 )
             }
         }
@@ -159,7 +164,8 @@ class TestDbhImpl : TestDbh {
                         it.getObject(8, LocalDate::class.java),
                         it.getObject(9, OffsetDateTime::class.java),
                         it.getString(10),
-                        it.getBoolean(11)
+                        it.getBoolean(11),
+                        it.getBytes(12)
                     )
                 } else {
                     null
@@ -187,7 +193,8 @@ class TestDbhImpl : TestDbh {
                             it.getObject(9, LocalDate::class.java),
                             it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
-                            it.getBoolean(12)
+                            it.getBoolean(12),
+                            it.getBytes(13)
                         )
                     )
                 }
@@ -211,7 +218,8 @@ class TestDbhImpl : TestDbh {
             it.setValue(9, obj.tscol)
             it.setValue(10, obj.longtextcol)
             it.setValue(11, obj.booleancol)
-            it.setValue(12, obj.id)
+            it.setValue(12, obj.bytecol)
+            it.setValue(13, obj.id)
 
             return it.executeUpdate() > 0
         }
@@ -244,7 +252,8 @@ class TestDbhImpl : TestDbh {
                             it.getObject(9, LocalDate::class.java),
                             it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
-                            it.getBoolean(12)
+                            it.getBoolean(12),
+                            it.getBytes(13)
                         )
                     )
                     count++
@@ -286,7 +295,8 @@ class TestDbhImpl : TestDbh {
                             it.getObject(9, LocalDate::class.java),
                             it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
-                            it.getBoolean(12)
+                            it.getBoolean(12),
+                            it.getBytes(13)
                         )
                     )
                     count++
@@ -320,7 +330,8 @@ class TestDbhImpl : TestDbh {
                             it.getObject(9, LocalDate::class.java),
                             it.getObject(10, OffsetDateTime::class.java),
                             it.getString(11),
-                            it.getBoolean(12)
+                            it.getBoolean(12),
+                            it.getBytes(13)
                         )
                     )
                     count++

@@ -13,5 +13,6 @@ enum class FieldType {
     LOCAL_TIME,
     LOCAL_DATE,
     LOCAL_DATETIME,
-    OFFSET_DATATIME
+    OFFSET_DATATIME,
+    BYTE_ARRAY
 }
