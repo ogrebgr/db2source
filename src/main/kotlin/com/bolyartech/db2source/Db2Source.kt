@@ -24,7 +24,7 @@ class Db2Source {
 
         val fe = FieldExtractor(typeMapper)
         val fieldsRez = dbc.use {
-            fe.extract(dbc, data.tables[0].tableName)
+            fe.extract(dbc, data.dbSchema, data.tables[0].tableName)
         }
 
         if (fieldsRez is FieldExtractResultError) {
