@@ -1,50 +1,39 @@
 package com.bolyartech.db2source
 
 import java.sql.Connection
+import java.sql.SQLException
 
 class FieldExtractor(private val typeMapper: TypeMapper) {
     private val SQL =
-        "SELECT column_name, data_type, character_maximum_length, numeric_precision FROM INFORMATION_SCHEMA.columns WHERE table_name = ?"
+        "SELECT column_name, data_type, character_maximum_length, numeric_precision FROM INFORMATION_SCHEMA.columns " +
+                "WHERE table_schema = ? AND table_name = ?"
 
-    fun extract(dbc: Connection, tableName: String): FieldExtractResult {
+    fun extract(dbc: Connection, schema: String, tableName: String): FieldExtractResult {
         val fields = ArrayList<Field>()
 
         val psLoad = dbc.prepareStatement(SQL)
         psLoad.use {
-            psLoad.setString(1, tableName)
+            psLoad.setString(1, schema)
+            psLoad.setString(2, tableName)
 
-            psLoad.executeQuery().use {
-                while (it.next()) {
-                    try {
-                        val len: Long = if (it.getLong(3) != 0L) it.getLong(3) else it.getLong(4)
-                        fields.add(Field(it.getString(1), typeMapper.map(it.getString(2)), len))
-                    } catch (e: IllegalArgumentException) {
-                        return FieldExtractResultError("Cannot map '{$it.getString(2)}'")
+            try {
+                psLoad.executeQuery().use {
+                    while (it.next()) {
+                        try {
+                            val len: Long = if (it.getLong(3) != 0L) it.getLong(3) else it.getLong(4)
+                            fields.add(Field(it.getString(1), typeMapper.map(it.getString(2)), len))
+                        } catch (e: IllegalArgumentException) {
+                            return FieldExtractResultError("Cannot map '{$it.getString(2)}'")
+                        }
                     }
                 }
+            } catch (e: SQLException) {
+                FieldExtractResultError(e.message ?: "")
             }
         }
 
         return FieldExtractResultOk(fields)
     }
-
-//    private fun typeMapper(sqlType: String): FieldType {
-//        val sqlTypeL = sqlType.toLowerCase()
-//        return when (sqlTypeL) {
-//            "int", "mediumint", "smallint" -> FieldType.INT
-//            "bigint" -> FieldType.LONG
-//            "boolean", "tinyint" -> FieldType.BOOLEAN
-//            "varchar" -> FieldType.STRING
-//            "text", "longtext", "mediumtext", "tinytext" -> FieldType.STRING
-//            "float" -> FieldType.FLOAT
-//            "double" -> FieldType.DOUBLE
-//            "time" -> FieldType.LOCAL_TIME
-//            "datetime" -> FieldType.LOCAL_DATETIME
-//            "date" -> FieldType.LOCAL_DATE
-//            "timestamp" -> FieldType.LOCAL_DATETIME
-//            else -> throw IllegalArgumentException()
-//        }
-//    }
 }
 
 sealed class FieldExtractResult
