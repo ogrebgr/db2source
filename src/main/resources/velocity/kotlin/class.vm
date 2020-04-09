@@ -24,16 +24,16 @@ interface ${class_name}Dbh {
     @Throws(SQLException::class)
     fun update(dbc: Connection, obj: $class_name) : Boolean
 
-@Throws(SQLException::class)
-fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name>
+    @Throws(SQLException::class)
+    fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name>
 
-@Throws(SQLException::class)
-fun loadPageIdLower(dbc: Connection, idLower: Int, pageSize: Int): List<$class_name>
+    @Throws(SQLException::class)
+    fun loadPageIdLower(dbc: Connection, idLower: Int, pageSize: Int): List<$class_name>
 
-@Throws(SQLException::class)
-fun loadLastPage(dbc: Connection, pageSize: Int): List<$class_name>
+    @Throws(SQLException::class)
+    fun loadLastPage(dbc: Connection, pageSize: Int): List<$class_name>
 
-@Throws(SQLException::class)
+    @Throws(SQLException::class)
 fun count(dbc: Connection) : Int
 
 @Throws(SQLException::class)
@@ -44,18 +44,16 @@ fun deleteAll(dbc: Connection) : Int
 }
 
 class ${class_name}DbhImpl : ${class_name}Dbh{
-companion object {
-private const val SQL_INSERT = """INSERT INTO "$table_name" (#foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end) VALUES (#foreach ($field in $fields)#if($field.name != "id")?#if( $foreach.hasNext ), #end#end#end)"""
-private const val SQL_SELECT_BY_ID = """SELECT #foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end FROM "$table_name" WHERE id = ?"""
-private const val SQL_SELECT_ALL = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name""""
-private const val SQL_UPDATE = """UPDATE "$table_name" SET #foreach ($field in $fields)#if($field.name != "id")"$field.name" = ?#if( $foreach.hasNext ), #end#end#end WHERE id = ?"""
-private const val SQL_SELECT_ID_GREATER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id > ?"""
-private const val SQL_SELECT_ID_LOWER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id < ?"""
-private const val SQL_SELECT_LAST = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" ORDER BY id DESC"""
-private const val SQL_COUNT = """SELECT COUNT(id) FROM "$table_name""""
-private const val SQL_DELETE = """DELETE FROM "$table_name" WHERE id = ?"""
-private const val SQL_DELETE_ALL = """DELETE FROM "$table_name""""
-}
+private val SQL_INSERT = """INSERT INTO "$table_name" (#foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end) VALUES (#foreach ($field in $fields)#if($field.name != "id")?#if( $foreach.hasNext ), #end#end#end)"""
+private val SQL_SELECT_BY_ID = """SELECT #foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end FROM "$table_name" WHERE id = ?"""
+private val SQL_SELECT_ALL = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name""""
+private val SQL_UPDATE = """UPDATE "$table_name" SET #foreach ($field in $fields)#if($field.name != "id")"$field.name" = ?#if( $foreach.hasNext ), #end#end#end WHERE id = ?"""
+private val SQL_SELECT_ID_GREATER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id > ?"""
+private val SQL_SELECT_ID_LOWER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id < ?"""
+private val SQL_SELECT_LAST = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" ORDER BY id DESC"""
+private val SQL_COUNT = """SELECT COUNT(id) FROM "$table_name""""
+private val SQL_DELETE = """DELETE FROM "$table_name" WHERE id = ?"""
+private val SQL_DELETE_ALL = """DELETE FROM "$table_name""""
 
 @Throws(SQLException::class)
 override fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.name != "id")$field.name: #include("${_dir}${field.type}.vm")#if( $foreach.hasNext ), #end#end#end) : $class_name {
@@ -66,30 +64,30 @@ it.setValue($index, $field.name)
 
 it.executeUpdate()
 it.generatedKeys.use {
-it.next()
-return $class_name(
-it.getInt(1),
+                it.next()
+                return $class_name(
+                    it.getInt(1),
 #foreach ($field in $fields)#if($field.name != "id")
-$field.name#if( $foreach.hasNext ), #end
+                    $field.name#if( $foreach.hasNext ), #end
 
 #end#end
-)
-}
-}
+                )
+            }
+        }
     }
 
 
     @Throws(SQLException::class)
     override fun loadById(dbc: Connection, id: Int) : $class_name? {
         dbc.prepareStatement(SQL_SELECT_BY_ID).use {
-it.setValue(1, id)
+            it.setValue(1, id)
 
-it.executeQuery().use {
-return if (it.next()) {
-$class_name(
-id,
+            it.executeQuery().use {
+                return if (it.next()) {
+                    $class_name(
+                        id,
 #foreach ($field in $fields)#if($field.name != "id")#set($index = $foreach.count - 1)
-it.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
+                        it.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
 
 #end#end
 )
@@ -113,26 +111,26 @@ it.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
 #end
 ))
 }
-}
-}
+            }
+        }
 
-return ret
-}
+        return ret
+    }
 
-@Throws(SQLException::class)
-override fun update(dbc: Connection, obj: $class_name) : Boolean {
-dbc.prepareStatement(SQL_UPDATE).use {
+    @Throws(SQLException::class)
+    override fun update(dbc: Connection, obj: $class_name) : Boolean {
+        dbc.prepareStatement(SQL_UPDATE).use {
 #foreach ($field in $fields)#if($field.name != "id")#set($index = $foreach.count - 1)
-it.setValue($index, obj.$field.name)
+            it.setValue($index, obj.$field.name)
 #end#end
 #set($index = $index + 1)
-it.setValue($index, obj.id)
+            it.setValue($index, obj.id)
 
-return it.executeUpdate() > 0
-}
-}
+            return it.executeUpdate() > 0
+        }
+    }
 
-@Throws(SQLException::class)
+    @Throws(SQLException::class)
 override fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name> {
 if (pageSize <= 0) {
 throw IllegalArgumentException("pageSize <= 0")
@@ -154,17 +152,17 @@ it.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
 ))
 count++
 if (count == pageSize) {
-return ret
-}
-}
+                        return ret
+                    }
+                }
 
-return ret
-}
-}
-}
+                return ret
+            }
+        }
+    }
 
 
-@Throws(SQLException::class)
+    @Throws(SQLException::class)
 override fun loadPageIdLower(dbc: Connection, idLower: Int, pageSize: Int): List<$class_name> {
 if (pageSize <= 0) {
 throw IllegalArgumentException("pageSize <= 0")
@@ -186,7 +184,7 @@ it.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
 ))
 count++
 if (count == pageSize) {
-return ret
+                        return ret
 }
 }
 
@@ -208,13 +206,13 @@ it.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
 
 #end
 ))
-count++
-if (count == pageSize) {
-return ret
-}
-}
-}
-}
+                    count++
+                    if (count == pageSize) {
+                        return ret
+                    }
+                }
+            }
+        }
 
         return ret
     }
