@@ -45,16 +45,16 @@ interface ${class_name}Dbh {
 
 class ${class_name}DbhImpl : ${class_name}Dbh{
     companion object {
-        private val SQL_INSERT = """INSERT INTO "$table_name" (#foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end) VALUES (#foreach ($field in $fields)#if($field.name != "id")?#if( $foreach.hasNext ), #end#end#end)"""
-        private val SQL_SELECT_BY_ID = """SELECT #foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end FROM "$table_name" WHERE id = ?"""
-        private val SQL_SELECT_ALL = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name""""
-        private val SQL_UPDATE = """UPDATE "$table_name" SET #foreach ($field in $fields)#if($field.name != "id")"$field.name" = ?#if( $foreach.hasNext ), #end#end#end WHERE id = ?"""
-        private val SQL_SELECT_ID_GREATER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id > ?"""
-        private val SQL_SELECT_ID_LOWER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id < ?"""
-        private val SQL_SELECT_LAST = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" ORDER BY id DESC"""
-        private val SQL_COUNT = """SELECT COUNT(id) FROM "$table_name""""
-        private val SQL_DELETE = """DELETE FROM "$table_name" WHERE id = ?"""
-        private val SQL_DELETE_ALL = """DELETE FROM "$table_name""""
+        private const val SQL_INSERT = """INSERT INTO "$table_name" (#foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end) VALUES (#foreach ($field in $fields)#if($field.name != "id")?#if( $foreach.hasNext ), #end#end#end)"""
+        private const val SQL_SELECT_BY_ID = """SELECT #foreach ($field in $fields)#if($field.name != "id")"$field.name"#if( $foreach.hasNext ), #end#end#end FROM "$table_name" WHERE id = ?"""
+        private const val SQL_SELECT_ALL = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name""""
+        private const val SQL_UPDATE = """UPDATE "$table_name" SET #foreach ($field in $fields)#if($field.name != "id")"$field.name" = ?#if( $foreach.hasNext ), #end#end#end WHERE id = ?"""
+        private const val SQL_SELECT_ID_GREATER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id > ?"""
+        private const val SQL_SELECT_ID_LOWER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id < ?"""
+        private const val SQL_SELECT_LAST = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" ORDER BY id DESC"""
+        private const val SQL_COUNT = """SELECT COUNT(id) FROM "$table_name""""
+        private const val SQL_DELETE = """DELETE FROM "$table_name" WHERE id = ?"""
+        private const val SQL_DELETE_ALL = """DELETE FROM "$table_name""""
     }
 
     @Throws(SQLException::class)
