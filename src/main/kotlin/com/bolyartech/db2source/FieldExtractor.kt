@@ -23,7 +23,7 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
                             val len: Long = if (it.getLong(3) != 0L) it.getLong(3) else it.getLong(4)
                             fields.add(Field(it.getString(1), typeMapper.map(it.getString(2)), len))
                         } catch (e: IllegalArgumentException) {
-                            return FieldExtractResultError("Cannot map '{$it.getString(2)}'")
+                            return FieldExtractResultError("Cannot map '${it.getString(2)}'")
                         }
                     }
                 }
