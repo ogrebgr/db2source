@@ -41,6 +41,7 @@ class TypeMapperPostgres : TypeMapper {
             "double precision" -> FieldType.DOUBLE
             "bytea" -> FieldType.BYTE_ARRAY
             "json" -> FieldType.STRING
+            "inet" -> FieldType.STRING
             else -> throw IllegalArgumentException()
         }
     }
