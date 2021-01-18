@@ -1,6 +1,6 @@
 package com.bolyartech.db2source
 
-data class Field(val name: String, val type: FieldType, val len: Long)
+data class Field(val name: String, val codeName: String, val type: FieldType, val len: Long)
 
 
 enum class FieldType {

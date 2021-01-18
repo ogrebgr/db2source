@@ -1,5 +1,6 @@
 package com.bolyartech.db2source
 
+import org.apache.commons.lang.WordUtils
 import java.sql.Connection
 import java.sql.SQLException
 
@@ -20,8 +21,17 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
                 psLoad.executeQuery().use {
                     while (it.next()) {
                         try {
+
                             val len: Long = if (it.getLong(3) != 0L) it.getLong(3) else it.getLong(4)
-                            fields.add(Field(it.getString(1), typeMapper.map(it.getString(2)), len))
+                            fields.add(
+                                Field(
+                                    it.getString(1),
+                                    WordUtils.uncapitalize(
+                                        WordUtils.capitalize(it.getString(1), charArrayOf('_')).replace("_", "")
+                                    ),
+                                    typeMapper.map(it.getString(2)), len
+                                )
+                            )
                         } catch (e: IllegalArgumentException) {
                             return FieldExtractResultError("Cannot map '${it.getString(2)}'")
                         }
