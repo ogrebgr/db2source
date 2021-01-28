@@ -5,7 +5,7 @@ import java.sql.Statement
 
 data class $class_name(
 #foreach ($field in $fields)
-    val $field.codeName: #include("${_dir}${field.type}.vm")#if( $foreach.hasNext ), #end
+    val $field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end
 
 #end
 )
@@ -13,7 +13,7 @@ data class $class_name(
 // TODO add provider to Dagger DI
 interface ${class_name}Dbh {
     @Throws(SQLException::class)
-    fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if( $foreach.hasNext ), #end#end#end) : $class_name
+    fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end) : $class_name
 
     @Throws(SQLException::class)
     fun loadById(dbc: Connection, id: Int) : $class_name?
@@ -58,7 +58,7 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
     }
 
     @Throws(SQLException::class)
-    override fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if( $foreach.hasNext ), #end#end#end) : $class_name {
+    override fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end) : $class_name {
         dbc.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS).use {
 #foreach ($field in $fields)#if($field.name != "id")#set($index = $foreach.count - 1)
             it.setValue($index, $field.codeName)

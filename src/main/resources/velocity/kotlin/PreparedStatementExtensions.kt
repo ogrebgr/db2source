@@ -13,8 +13,12 @@ fun PreparedStatement.setValue(position: Int, value: Boolean) {
 }
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: String) {
-    this.setString(position, value)
+fun PreparedStatement.setValue(position: Int, value: String?) {
+    if (value != null) {
+        this.setString(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.VARCHAR)
+    }
 }
 
 
@@ -29,20 +33,32 @@ fun PreparedStatement.setValue(position: Int, value: java.util.Date?) {
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: java.sql.Date) {
-    this.setDate(position, value)
+fun PreparedStatement.setValue(position: Int, value: java.sql.Date?) {
+    if (value != null) {
+        this.setDate(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.DATE)
+    }
 }
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: java.sql.Time) {
-    this.setTime(position, value)
+fun PreparedStatement.setValue(position: Int, value: java.sql.Time?) {
+    if (value != null) {
+        this.setTime(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.TIME)
+    }
 }
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: java.sql.Timestamp) {
-    this.setTimestamp(position, value)
+fun PreparedStatement.setValue(position: Int, value: java.sql.Timestamp?) {
+    if (value != null) {
+        this.setTimestamp(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.TIMESTAMP)
+    }
 }
 
 
@@ -107,35 +123,59 @@ fun PreparedStatement.setValue(position: Int, value: Double?) {
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: BigDecimal) {
-    this.setBigDecimal(position, value)
+fun PreparedStatement.setValue(position: Int, value: BigDecimal?) {
+    if (value != null) {
+        this.setBigDecimal(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.DECIMAL)
+    }
 }
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: ByteArray) {
-    this.setBytes(position, value)
+fun PreparedStatement.setValue(position: Int, value: ByteArray?) {
+    if (value != null) {
+        this.setBytes(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.BINARY)
+    }
 }
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: LocalTime) {
-    this.setObject(position, value)
+fun PreparedStatement.setValue(position: Int, value: LocalTime?) {
+    if (value != null) {
+        this.setObject(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.TIME)
+    }
 }
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: LocalDate) {
-    this.setObject(position, value)
+fun PreparedStatement.setValue(position: Int, value: LocalDate?) {
+    if (value != null) {
+        this.setObject(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.DATE)
+    }
 }
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: LocalDateTime) {
-    this.setObject(position, value)
+fun PreparedStatement.setValue(position: Int, value: LocalDateTime?) {
+    if (value != null) {
+        this.setObject(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.TIMESTAMP)
+    }
 }
 
 
 @Throws(SQLException::class)
-fun PreparedStatement.setValue(position: Int, value: OffsetDateTime) {
-    this.setObject(position, value)
+fun PreparedStatement.setValue(position: Int, value: OffsetDateTime?) {
+    if (value != null) {
+        this.setObject(position, value)
+    } else {
+        this.setNull(position, java.sql.Types.TIMESTAMP_WITH_TIMEZONE)
+    }
 }

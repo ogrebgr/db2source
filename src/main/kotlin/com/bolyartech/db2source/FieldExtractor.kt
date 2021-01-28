@@ -6,7 +6,7 @@ import java.sql.SQLException
 
 class FieldExtractor(private val typeMapper: TypeMapper) {
     private val SQL =
-        "SELECT column_name, data_type, character_maximum_length, numeric_precision FROM INFORMATION_SCHEMA.columns " +
+        "SELECT column_name, data_type, character_maximum_length, numeric_precision, is_nullable FROM INFORMATION_SCHEMA.columns " +
                 "WHERE table_schema = ? AND table_name = ?"
 
     fun extract(dbc: Connection, schema: String, tableName: String): FieldExtractResult {
@@ -29,7 +29,9 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
                                     WordUtils.uncapitalize(
                                         WordUtils.capitalize(it.getString(1), charArrayOf('_')).replace("_", "")
                                     ),
-                                    typeMapper.map(it.getString(2)), len
+                                    typeMapper.map(it.getString(2)),
+                                    len,
+                                    it.getString(5) == "YES"
                                 )
                             )
                         } catch (e: IllegalArgumentException) {
