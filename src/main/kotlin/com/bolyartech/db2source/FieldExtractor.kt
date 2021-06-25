@@ -13,6 +13,8 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
         val fields = ArrayList<Field>()
 
         val psLoad = dbc.prepareStatement(SQL)
+        var hasIdColumn = false
+        var idColumnType: FieldType? = null
         psLoad.use {
             psLoad.setString(1, schema)
             psLoad.setString(2, tableName)
@@ -21,7 +23,10 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
                 psLoad.executeQuery().use {
                     while (it.next()) {
                         try {
-
+                            if (it.getString(1) == "id") {
+                                hasIdColumn = true
+                                idColumnType = typeMapper.map(it.getString(2))
+                            }
                             val len: Long = if (it.getLong(3) != 0L) it.getLong(3) else it.getLong(4)
                             fields.add(
                                 Field(
@@ -44,10 +49,12 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
             }
         }
 
-        return FieldExtractResultOk(fields)
+        return FieldExtractResultOk(fields, hasIdColumn, idColumnType)
     }
 }
 
 sealed class FieldExtractResult
-data class FieldExtractResultOk(val fields: List<Field>) : FieldExtractResult()
+data class FieldExtractResultOk(val fields: List<Field>, val hasId: Boolean, val idType: FieldType?) :
+    FieldExtractResult()
+
 class FieldExtractResultError(val reason: String) : FieldExtractResult()

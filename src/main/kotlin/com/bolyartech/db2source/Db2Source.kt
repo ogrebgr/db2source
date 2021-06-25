@@ -40,6 +40,8 @@ class Db2Source {
         tple.assign("db_schema", data.dbSchema)
         tple.assign("table_name", data.tables[0].tableName)
         tple.assign("fields", fields)
+        tple.assign("hasIdColumn", fieldsRez.hasId)
+        tple.assign("idColumnType", fieldsRez.idType)
         val src = tple.render(TEMPLATE_CLASS)
 
         val filename = data.tables[0].destinationClassName + ".kt"
