@@ -15,8 +15,9 @@ interface ${class_name}Dbh {
     @Throws(SQLException::class)
     fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end) : $class_name
 #if ($hasIdColumn)
+#set($int = "INT")
 @Throws(SQLException::class)
-#if ($field.type == "INT")
+#if ($idColumnType == $int)
     fun loadById(dbc: Connection, id: Int) : $class_name?
 #else
     fun loadById(dbc: Connection, id: Long) : $class_name?
@@ -73,7 +74,7 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
             it.generatedKeys.use {
                 it.next()
                 return $class_name(
-#if ($field.type == "INT")
+#if ($idColumnType == $int)
                     it.getInt(1),
 #else
                     it.getLong(1),
@@ -89,7 +90,7 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 #if ($hasIdColumn)
 
     @Throws(SQLException::class)
-#if ($field.type == "INT")
+#if ($idColumnType == $int)
     override fun loadById(dbc: Connection, id: Int) : $class_name? {
 #else
     override fun loadById(dbc: Connection, id: Long) : $class_name? {
