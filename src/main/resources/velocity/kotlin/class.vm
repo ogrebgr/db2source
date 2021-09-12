@@ -75,11 +75,8 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
     override fun createNew(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end) : $class_name {
         dbc.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS).use {
 #foreach ($field in $fields)
-#if($hasIdColumn)#set($index = $foreach.count - 1)#if ($field.name != "id")
-            it.setValue($index, $field.codeName)
-#end#else
             it.setValue($foreach.count, $field.codeName)
-#end#end
+#end
 
             it.executeUpdate()
             it.generatedKeys.use {
