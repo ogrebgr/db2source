@@ -79,8 +79,8 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
             it.setValue($index, $field.codeName)
     #end#else
             it.setValue($foreach.count, $field.codeName)
+        #end
     #end
-#end
             it.executeUpdate()
             it.generatedKeys.use {
                 it.next()
