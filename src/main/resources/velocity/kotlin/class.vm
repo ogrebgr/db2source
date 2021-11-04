@@ -28,7 +28,7 @@ interface ${class_name}Dbh {
 #if ($hasIdColumn)
 
     @Throws(SQLException::class)
-    fun update(dbc: Connection, obj: $class_name) : Boolean
+    fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($idColumnType == $int)Int#{else}Long#end) : $class_name?
 
     @Throws(SQLException::class)
     fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name>
@@ -150,15 +150,25 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
 
     @Throws(SQLException::class)
-    override fun update(dbc: Connection, obj: $class_name) : Boolean {
+    override fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($idColumnType == $int)Int#{else}Long#end) : $class_name? {
         dbc.prepareStatement(SQL_UPDATE).use {
 #foreach ($field in $fields)#if($hasIdColumn && $field.codeName != "id")#set($index = $foreach.count - 1)
-            it.setValue($index, obj.$field.codeName)
+            it.setValue($index, $field.codeName)
 #end#end
 #set($index = $index + 1)
-            it.setValue($index, obj.id)
+            it.setValue($index, id)
 
-            return it.executeUpdate() > 0
+            return if (it.executeUpdate() > 0) {
+                return $class_name(
+                    id,
+#foreach ($field in $fields)#if($field.codeName != "id")
+                    $field.codeName#if( $foreach.hasNext ), #end
+
+#end#end
+                )
+            } else {
+                null
+            }
         }
     }
 
