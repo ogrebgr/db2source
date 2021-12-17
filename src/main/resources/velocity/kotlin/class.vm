@@ -42,8 +42,14 @@ interface ${class_name}Dbh {
     @Throws(SQLException::class)
     fun count(dbc: Connection) : Int
 
+#if ($idColumnType == $int)
     @Throws(SQLException::class)
     fun delete(dbc: Connection, id: Int) : Int
+#else
+    @Throws(SQLException::class)
+    fun delete(dbc: Connection, id: Long) : Int
+#end
+
 #end
     @Throws(SQLException::class)
     fun deleteAll(dbc: Connection) : Int
@@ -270,7 +276,11 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
     }
 
     @Throws(SQLException::class)
-    override fun delete(dbc: Connection, id: Int) : Int {
+#if ($idColumnType == $int)
+    fun delete(dbc: Connection, id: Int) : Int
+#else
+    fun delete(dbc: Connection, id: Long) : Int
+#end
         dbc.prepareStatement(SQL_DELETE).use {
             it.setValue(1, id)
             return it.executeUpdate()
