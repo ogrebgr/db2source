@@ -275,9 +275,9 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
     @Throws(SQLException::class)
 #if ($idColumnType == $int)
-    fun delete(dbc: Connection, id: Int) : Int {
+    override fun delete(dbc: Connection, id: Int) : Int {
 #else
-    fun delete(dbc: Connection, id: Long) : Int {
+    override fun delete(dbc: Connection, id: Long) : Int {
 #end
         dbc.prepareStatement(SQL_DELETE).use {
             it.setValue(1, id)
