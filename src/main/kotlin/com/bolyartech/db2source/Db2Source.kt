@@ -42,6 +42,7 @@ class Db2Source {
         tple.assign("fields", fields)
         tple.assign("hasIdColumn", fieldsRez.hasId)
         tple.assign("idColumnType", fieldsRez.idType)
+        tple.assign("addPaginationMethods", data.addPaginationMethods)
         val src = tple.render(TEMPLATE_CLASS)
 
         val filename = data.tables[0].destinationClassName + ".kt"

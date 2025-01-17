@@ -30,6 +30,7 @@ interface ${class_name}Dbh {
     @Throws(SQLException::class)
     fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($idColumnType == $int)Int#{else}Long#end) : $class_name?
 
+#if ($addPaginationMethods)
     @Throws(SQLException::class)
     fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name>
 
@@ -38,6 +39,7 @@ interface ${class_name}Dbh {
 
     @Throws(SQLException::class)
     fun loadLastPage(dbc: Connection, pageSize: Int): List<$class_name>
+#end
 
     @Throws(SQLException::class)
     fun count(dbc: Connection) : Int
@@ -64,9 +66,11 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
         private const val SQL_SELECT_ALL = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name""""
 #if ($hasIdColumn)
         private const val SQL_UPDATE = """UPDATE "$table_name" SET #foreach ($field in $fields)#if($field.name != "id")"$field.name" = ?#if( $foreach.hasNext ), #end#end#end WHERE id = ?"""
-        private const val SQL_SELECT_ID_GREATER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id > ?"""
-        private const val SQL_SELECT_ID_LOWER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id < ?"""
-        private const val SQL_SELECT_LAST = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" ORDER BY id DESC"""
+#if ($addPaginationMethods)
+        private const val SQL_SELECT_ID_GREATER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id > ? LIMIT ?"""
+        private const val SQL_SELECT_ID_LOWER = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" WHERE id < ? LIMIT ?"""
+        private const val SQL_SELECT_LAST = """SELECT #foreach ($field in $fields)"$field.name"#if( $foreach.hasNext ), #end#end FROM "$table_name" ORDER BY id DESC LIMIT ?"""
+#end
         private const val SQL_COUNT = """SELECT COUNT(id) FROM "$table_name""""
 #end
 #if ($hasIdColumn)
@@ -165,6 +169,7 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
         }
     }
 
+#if ($addPaginationMethods)
     @Throws(SQLException::class)
     override fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name> {
         if (pageSize <= 0) {
@@ -173,17 +178,13 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
         dbc.prepareStatement(SQL_SELECT_ID_GREATER).use {
             it.setValue(1, idGreater)
+            it.setValue(2, pageSize)
 
             it.executeQuery().use {
-                var count = 0
                 val ret = mutableListOf<$class_name>()
 
                 while (it.next()) {
                     ret.add(objectFromResultSet(it))
-                    count++
-                    if (count == pageSize) {
-                        return ret
-                    }
                 }
 
                 return ret
@@ -200,17 +201,13 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
         dbc.prepareStatement(SQL_SELECT_ID_LOWER).use {
             it.setValue(1, idLower)
+            it.setValue(2, pageSize)
 
             it.executeQuery().use {
-                var count = 0
                 val ret = mutableListOf<$class_name>()
 
                 while (it.next()) {
                     ret.add(objectFromResultSet(it))
-                    count++
-                    if (count == pageSize) {
-                        return ret
-                    }
                 }
 
                 return ret
@@ -222,20 +219,18 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
     override fun loadLastPage(dbc: Connection, pageSize: Int): List<$class_name> {
         val ret = mutableListOf<$class_name>()
         dbc.prepareStatement(SQL_SELECT_LAST).use {
+            it.setValue(1, pageSize)
+
             it.executeQuery().use {
-                var count = 0
                 while (it.next()) {
                     ret.add(objectFromResultSet(it))
-                    count++
-                    if (count == pageSize) {
-                        return ret
-                    }
                 }
             }
         }
 
         return ret
     }
+#end
 
     @Throws(SQLException::class)
     override fun count(dbc: Connection) : Int {
