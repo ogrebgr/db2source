@@ -3,9 +3,34 @@ import java.sql.SQLException
 import java.sql.Statement
 import java.sql.ResultSet
 
+#if ($hasIdColumn)
+#set($int = "INT")
+
+#if ($createValueClassForId)
+#if ($idColumnType == $int)
+@JvmInline
+value class ${class_name}Id(val value: Int) {
+    companion object {
+        val NOT_INITIALIZED = ${class_name}Id(-1)
+    }
+}
+#else
+value class ${class_name}Id(val value: Long) {
+    companion object {
+        val NOT_INITIALIZED = ${class_name}Id(-1L)
+    }
+}
+#end
+#end
+#end
+
 data class $class_name(
 #foreach ($field in $fields)
+    #if($field.codeName != "id")
     val $field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end
+    #else
+    val $field.codeName: ${class_name}Id#if( $foreach.hasNext ), #end
+    #end
 
 #end
 )
@@ -17,25 +42,21 @@ interface ${class_name}Dbh {
 #if ($hasIdColumn)
 #set($int = "INT")
 @Throws(SQLException::class)
-#if ($idColumnType == $int)
-    fun loadById(dbc: Connection, id: Int) : $class_name?
-#else
-    fun loadById(dbc: Connection, id: Long) : $class_name?
-#end
+    fun loadById(dbc: Connection, id: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end) : $class_name?
 #end
     @Throws(SQLException::class)
     fun loadAll(dbc: Connection) : List<$class_name>
 #if ($hasIdColumn)
 
     @Throws(SQLException::class)
-    fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($idColumnType == $int)Int#{else}Long#end) : $class_name?
+    fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end) : $class_name?
 
 #if ($addPaginationMethods)
     @Throws(SQLException::class)
-    fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name>
+    fun loadPageIdGreater(dbc: Connection, idGreater: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end, pageSize: Int): List<$class_name>
 
     @Throws(SQLException::class)
-    fun loadPageIdLower(dbc: Connection, idLower: Int, pageSize: Int): List<$class_name>
+    fun loadPageIdLower(dbc: Connection, idLower: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end, pageSize: Int): List<$class_name>
 
     @Throws(SQLException::class)
     fun loadLastPage(dbc: Connection, pageSize: Int): List<$class_name>
@@ -44,13 +65,8 @@ interface ${class_name}Dbh {
     @Throws(SQLException::class)
     fun count(dbc: Connection) : Int
 
-#if ($idColumnType == $int)
     @Throws(SQLException::class)
-    fun delete(dbc: Connection, id: Int) : Int
-#else
-    @Throws(SQLException::class)
-    fun delete(dbc: Connection, id: Long) : Int
-#end
+    fun delete(dbc: Connection, id: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end) : Int
 
 #end
     @Throws(SQLException::class)
@@ -95,9 +111,9 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
                 return $class_name(
 #if ($hasIdColumn)
     #if ($idColumnType == $int)
-                        it.getInt(1),
+                        #if ($createValueClassForId)${class_name}Id(it.getInt(1))#{else}it.getInt(1)#end,
     #else
-                        it.getLong(1),
+                        #if ($createValueClassForId)${class_name}Id(it.getLong(1))#{else}it.getLong(1)#end,
     #end
 #end
 #foreach ($field in $fields)#if($field.codeName != "id")
@@ -111,13 +127,9 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 #if ($hasIdColumn)
 
     @Throws(SQLException::class)
-#if ($idColumnType == $int)
-    override fun loadById(dbc: Connection, id: Int) : $class_name? {
-#else
-    override fun loadById(dbc: Connection, id: Long) : $class_name? {
-#end
+    override fun loadById(dbc: Connection, id: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end) : $class_name? {
         dbc.prepareStatement(SQL_SELECT_BY_ID).use {
-            it.setValue(1, id)
+            #if ($createValueClassForId)it.setValue(1, id.value)#{else}it.setValue(1, id)#end
 
             it.executeQuery().use {
                 return if (it.next()) {
@@ -147,13 +159,13 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
 
     @Throws(SQLException::class)
-    override fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($idColumnType == $int)Int#{else}Long#end) : $class_name? {
+    override fun update(dbc: Connection, #foreach ($field in $fields)#if($field.codeName != "id")$field.codeName: #include("${_dir}${field.type}.vm")#if(${field.izNullable})?#end#if( $foreach.hasNext ), #end#end#end, id: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end) : $class_name? {
         dbc.prepareStatement(SQL_UPDATE).use {
 #foreach ($field in $fields)#if($hasIdColumn && $field.codeName != "id")#set($index = $foreach.count - 1)
             it.setValue($index, $field.codeName)
 #end#end
 #set($index = $index + 1)
-            it.setValue($index, id)
+            #if ($createValueClassForId)it.setValue($index, id.value)#{else}it.setValue($index, id)#end
 
             return if (it.executeUpdate() > 0) {
                 return $class_name(
@@ -171,13 +183,14 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
 #if ($addPaginationMethods)
     @Throws(SQLException::class)
-    override fun loadPageIdGreater(dbc: Connection, idGreater: Int, pageSize: Int): List<$class_name> {
+    override fun loadPageIdGreater(dbc: Connection, idGreater: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end, pageSize: Int): List<$class_name> {
         if (pageSize <= 0) {
             throw IllegalArgumentException("pageSize <= 0")
         }
 
         dbc.prepareStatement(SQL_SELECT_ID_GREATER).use {
-            it.setValue(1, idGreater)
+            #if ($createValueClassForId)it.setValue(1, idGreater.value)#{else}it.setValue(1, idGreater)#end
+
             it.setValue(2, pageSize)
 
             it.executeQuery().use {
@@ -194,13 +207,14 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
 
 
     @Throws(SQLException::class)
-    override fun loadPageIdLower(dbc: Connection, idLower: Int, pageSize: Int): List<$class_name> {
+    override fun loadPageIdLower(dbc: Connection, idLower: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end, pageSize: Int): List<$class_name> {
         if (pageSize <= 0) {
             throw IllegalArgumentException("pageSize <= 0")
         }
 
         dbc.prepareStatement(SQL_SELECT_ID_LOWER).use {
-            it.setValue(1, idLower)
+            #if ($createValueClassForId)it.setValue(1, idLower.value)#{else}it.setValue(1, idLower)#end
+
             it.setValue(2, pageSize)
 
             it.executeQuery().use {
@@ -243,13 +257,10 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
     }
 
     @Throws(SQLException::class)
-#if ($idColumnType == $int)
-    override fun delete(dbc: Connection, id: Int) : Int {
-#else
-    override fun delete(dbc: Connection, id: Long) : Int {
-#end
+    override fun delete(dbc: Connection, id: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end) : Int {
         dbc.prepareStatement(SQL_DELETE).use {
-            it.setValue(1, id)
+            #if ($createValueClassForId)it.setValue(1, id.value)#{else}it.setValue(1, id)#end
+
             return it.executeUpdate()
         }
     }
@@ -266,7 +277,15 @@ class ${class_name}DbhImpl : ${class_name}Dbh{
     private fun objectFromResultSet(rs: ResultSet): $class_name {
         return $class_name(
         #foreach ($field in $fields)#set($index = $foreach.count)
+        #if ($field.codeName != "id")
         rs.#parse("${_dir}${field.type}_get.vm")#if( $foreach.hasNext ), #end
+        #else
+            #if ($idColumnType == $int)
+            #if ($createValueClassForId)${class_name}Id(rs.getInt(1)),#{else}rs.getInt(1),#end
+            #else
+            #if ($createValueClassForId)${class_name}Id(rs.getLong(1)),#{else}rs.getLong(1),#end
+            #end
+        #end
 
         #end
         )

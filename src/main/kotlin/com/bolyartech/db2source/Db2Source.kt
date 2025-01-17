@@ -43,6 +43,10 @@ class Db2Source {
         tple.assign("hasIdColumn", fieldsRez.hasId)
         tple.assign("idColumnType", fieldsRez.idType)
         tple.assign("addPaginationMethods", data.addPaginationMethods)
+        tple.assign("createValueClassForId", data.createValueClassForId)
+        if (!fieldsRez.hasId && data.createValueClassForId) {
+            throw IllegalStateException("'createValueClassForId' is ON but there is no 'id' column")
+        }
         val src = tple.render(TEMPLATE_CLASS)
 
         val filename = data.tables[0].destinationClassName + ".kt"

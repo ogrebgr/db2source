@@ -7,6 +7,7 @@ data class ConfigData(
     val dbSchema: String,
     val tables: List<TableConfig>,
     val addPaginationMethods: Boolean,
+    val createValueClassForId: Boolean,
 )
 
 data class TableConfig(val tableName: String, val destinationClassName: String, val destinationDir: String)
