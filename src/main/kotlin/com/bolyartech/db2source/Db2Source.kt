@@ -44,6 +44,7 @@ class Db2Source {
         tple.assign("idColumnType", fieldsRez.idType)
         tple.assign("addPaginationMethods", data.addPaginationMethods)
         tple.assign("createValueClassForId", data.createValueClassForId)
+        tple.assign("addDependencyInjectionCode", data.addDependencyInjectionCode)
         if (!fieldsRez.hasId && data.createValueClassForId) {
             throw IllegalStateException("'createValueClassForId' is ON but there is no 'id' column")
         }
