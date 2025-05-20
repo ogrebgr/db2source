@@ -1,4 +1,4 @@
-package fix me
+package fixme
 
 import com.bolyartech.forge.server.db.setValue
 import java.sql.Connection
