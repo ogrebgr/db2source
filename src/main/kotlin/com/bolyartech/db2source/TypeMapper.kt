@@ -1,12 +1,15 @@
 package com.bolyartech.db2source
 
+import java.util.Locale
+import java.util.Locale.getDefault
+
 interface TypeMapper {
     fun map(sqlType: String): FieldType
 }
 
 class TypeMapperMysql : TypeMapper {
     override fun map(sqlType: String): FieldType {
-        val sqlTypeL = sqlType.toLowerCase()
+        val sqlTypeL = sqlType.lowercase(getDefault())
         return when (sqlTypeL) {
             "int", "mediumint", "smallint" -> FieldType.INT
             "bigint" -> FieldType.LONG
@@ -27,7 +30,7 @@ class TypeMapperMysql : TypeMapper {
 
 class TypeMapperPostgres : TypeMapper {
     override fun map(sqlType: String): FieldType {
-        val sqlTypeL = sqlType.toLowerCase()
+        val sqlTypeL = sqlType.lowercase(getDefault())
         return when (sqlTypeL) {
             "integer", "smallint" -> FieldType.INT
             "bigint" -> FieldType.LONG
