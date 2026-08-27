@@ -9,6 +9,7 @@ data class ConfigData(
     val addPaginationMethods: Boolean,
     val createValueClassForId: Boolean,
     val addDependencyInjectionCode: Boolean,
+    val addLockMethod: Boolean,
 )
 
 data class TableConfig(val tableName: String, val destinationClassName: String, val destinationDir: String)

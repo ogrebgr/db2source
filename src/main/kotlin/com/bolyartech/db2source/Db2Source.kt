@@ -27,6 +27,10 @@ class Db2Source {
             fe.extract(dbc, data.dbSchema, data.tables[0].tableName)
         }
 
+        if (fieldsRez is FieldExtractResultTableNotFound) {
+            return GenerationResultErrorTableNotFound(data.tables[0].tableName)
+        }
+
         if (fieldsRez is FieldExtractResultError) {
             return GenerationResultErrorCannotConnectDb(fieldsRez.reason)
         }
@@ -45,6 +49,7 @@ class Db2Source {
         tple.assign("addPaginationMethods", data.addPaginationMethods)
         tple.assign("createValueClassForId", data.createValueClassForId)
         tple.assign("addDependencyInjectionCode", data.addDependencyInjectionCode)
+        tple.assign("addLockMethod", data.addLockMethod)
         if (!fieldsRez.hasId && data.createValueClassForId) {
             throw IllegalStateException("'createValueClassForId' is ON but there is no 'id' column")
         }
@@ -65,7 +70,7 @@ class Db2Source {
             }
         }
 
-        return GenerationResultOk()
+        return GenerationResultOk(file.name)
     }
 
     private fun resolveTypeMapper(dbDsn: String): TypeMapper? {
@@ -77,15 +82,15 @@ class Db2Source {
             null
         }
     }
-
 }
 
 sealed class GenerationResult
 
-class GenerationResultOk : GenerationResult()
+class GenerationResultOk(val generatedFileName: String) : GenerationResult()
 
 sealed class GenerationResultError(val reason: String) : GenerationResult()
 
 class GenerationResultErrorUnsupportedDbType(reason: String) : GenerationResultError(reason)
 class GenerationResultErrorCannotConnectDb(reason: String) : GenerationResultError(reason)
 class GenerationResultErrorUnableToExtractFields(reason: String) : GenerationResultError(reason)
+data class GenerationResultErrorTableNotFound(val table: String) : GenerationResult()

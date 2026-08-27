@@ -21,7 +21,10 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
 
             try {
                 psLoad.executeQuery().use {
-                    while (it.next()) {
+                    if (!it.next()) {
+                        return FieldExtractResultTableNotFound
+                    }
+                    do {
                         try {
                             if (it.getString(1) == "id") {
                                 hasIdColumn = true
@@ -42,12 +45,13 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
                         } catch (e: IllegalArgumentException) {
                             return FieldExtractResultError("Cannot map '${it.getString(2)}'")
                         }
-                    }
+                    } while (it.next())
                 }
             } catch (e: SQLException) {
                 FieldExtractResultError(e.message ?: "")
             }
         }
+
 
         return FieldExtractResultOk(fields, hasIdColumn, idColumnType)
     }
@@ -56,5 +60,5 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
 sealed class FieldExtractResult
 data class FieldExtractResultOk(val fields: List<Field>, val hasId: Boolean, val idType: FieldType?) :
     FieldExtractResult()
-
+data object FieldExtractResultTableNotFound: FieldExtractResult()
 class FieldExtractResultError(val reason: String) : FieldExtractResult()
