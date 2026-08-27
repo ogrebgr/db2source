@@ -83,7 +83,7 @@ interface ${class_name}Dbh {
 
 #if ($addLockMethod)
     @Throws(SQLException::class)
-    fun lock(dbc: Connection)
+    fun lockTable(dbc: Connection)
 #end
 }
 
