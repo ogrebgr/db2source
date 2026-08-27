@@ -107,7 +107,6 @@ class ${class_name}DbhImpl #if ($addDependencyInjectionCode)@Inject constructor(
         private const val SQL_DELETE = """DELETE FROM "$table_name" WHERE id = ?"""
 #end
         private const val SQL_DELETE_ALL = """DELETE FROM "$table_name""""
-
 #if ($addLockMethod)
         private const val SQL_LOCK = """LOCK TABLE "$table_name" IN EXCLUSIVE MODE"""
 #end

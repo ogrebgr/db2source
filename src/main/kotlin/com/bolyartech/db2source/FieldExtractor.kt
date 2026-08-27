@@ -60,5 +60,6 @@ class FieldExtractor(private val typeMapper: TypeMapper) {
 sealed class FieldExtractResult
 data class FieldExtractResultOk(val fields: List<Field>, val hasId: Boolean, val idType: FieldType?) :
     FieldExtractResult()
-data object FieldExtractResultTableNotFound: FieldExtractResult()
+
+data object FieldExtractResultTableNotFound : FieldExtractResult()
 class FieldExtractResultError(val reason: String) : FieldExtractResult()

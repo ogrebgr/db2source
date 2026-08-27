@@ -1,6 +1,5 @@
 package com.bolyartech.db2source
 
-import java.util.Locale
 import java.util.Locale.getDefault
 
 interface TypeMapper {
