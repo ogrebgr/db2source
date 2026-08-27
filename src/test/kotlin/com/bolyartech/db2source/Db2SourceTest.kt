@@ -26,7 +26,8 @@ class Db2SourceTest {
     fun test_Generate() {
         val conf = ConfigData(
             dsn,
-            "test", "test", "test", listOf(TableConfig("test", "Test", "/tmp"))
+            "test", "test", "test", listOf(TableConfig("test", "Test", "/tmp")),
+            true, true, true, true
         )
         val db2source = Db2Source()
         db2source.generate(conf)
