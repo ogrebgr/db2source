@@ -197,7 +197,7 @@ class ${class_name}DbhImpl #if ($addDependencyInjectionCode)@Inject constructor(
 #if ($addPaginationMethods)
     override fun loadPageIdGreater(dbc: Connection, idGreater: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end, pageSize: Int): List<$class_name> {
         if (pageSize <= 0) {
-            throw IllegalArgumentException("pageSize <= 0")
+            error("pageSize <= 0")
         }
 
         dbc.prepareStatement(SQL_SELECT_ID_GREATER).use {
@@ -220,7 +220,7 @@ class ${class_name}DbhImpl #if ($addDependencyInjectionCode)@Inject constructor(
 
     override fun loadPageIdLower(dbc: Connection, idLower: #if ($createValueClassForId)${class_name}Id#else#if ($idColumnType == $int)Int#{else}Long#end#end, pageSize: Int): List<$class_name> {
         if (pageSize <= 0) {
-            throw IllegalArgumentException("pageSize <= 0")
+            error("pageSize <= 0")
         }
 
         dbc.prepareStatement(SQL_SELECT_ID_LOWER).use {
